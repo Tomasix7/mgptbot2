@@ -2,4 +2,4 @@ Flask
 pyTelegramBotAPI
 groq
 schedule
-pymongo[srv]
+pymongo
