@@ -5,19 +5,12 @@ from groq import Groq
 from flask import Flask, request
 from storage import dialogue_storage
 
-# Чат-ID, куда будет отправляться сообщение
-# YOUR_CHAT_ID = os.getenv("CHATID") # '514396790'
-# Константы для ключей API from HEROKU
-# CLIENT_API_KEY = os.getenv("CLIKEY")  # ключ получен здесь: https://console.groq.com/keys
-# TELEGRAM_TOKEN = os.getenv("TELKEY")
-# TELEGRAM_TOKEN2 = os.getenv("ROONEYKEY")
-# UNSPLASH_ACCESS_KEY = os.getenv('UNSKEY')
+YOUR_CHAT_ID = os.getenv("YOUR_CHAT_ID")
+CLIENT_API_KEY = os.getenv("CLIENT_API_KEY")  # ключ получен здесь: https://console.groq.com/keys
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+UNSPLASH_ACCESS_KEY = os.getenv('UNSPLASH_ACCESS_KEY')
 
 logging.basicConfig(level=logging.INFO)
-
-CLIENT_API_KEY = "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" # CLIKEY *ключ получен здесь: https://console.groq.com/keys
-TELEGRAM_TOKEN = "6758936853:AAHRu5q5Jg5ddxmwfzOYzSsRuWD0LtS2xco" #ROONEYKEY
-UNSPLASH_ACCESS_KEY =  "QSber4N0pqeXdCOJJRD7C-dKd-lssL1MT6LpvrGDp1c"
 
 client = Groq(api_key=CLIENT_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_TOKEN) #ROONEYKEY
@@ -94,12 +87,11 @@ def get_text_messages(message):
         dialogue_storage.add_message(chat_id, 'assistant', response.choices[0].message.content)
     except Exception as e:
         logging.error(f'Error when sending request to Groq: {e}')
-        bot.send_message(message.from_user.id, "Произошла ошибка при запросе к нейросети. Попробуй снова позже!")
+        bot.send_message(message.from_user.id, "Прошу прощения 😊 Не прошло сообщение, повтори чуть позже, пожалуйста 🙏")
 
 @app.route('/')
 def index():
-    return 'Hello, this is my telegram bot!'
-
+    return 'Hello, this is my telegram bot on Render!'
 
 if __name__ == '__main__':
     bot.remove_webhook()
