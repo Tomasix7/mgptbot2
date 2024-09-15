@@ -8,7 +8,7 @@ from groq import Groq
 
 # Подключение к MongoDB
 # MONGO_URI = os.getenv('MONGO_URI')  # Получи URI из MongoDB Atlas
-MONGO_URI = 'mongodb+srv://luminiaruni:Sn9Pg5G6sQ6cPvKI@cluster0.0zku6.mongodb.net/dialogue_database?retryWrites=true&w=majority&appName=Cluster0'  # Получи URI из MongoDB Atlas
+MONGO_URI = 'mongodb+srv://luminiaruni:Sn9Pg5G6sQ6cPvKI@cluster0.mongodb.net/dialogue_database?retryWrites=true&w=majority'  # Получи URI из MongoDB Atlas
 client = MongoClient(MONGO_URI)
 db = client['dialogue_database']
 collection = db['dialogs']
