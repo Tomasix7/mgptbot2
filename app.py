@@ -48,15 +48,20 @@ client_groq = Groq(api_key=CLIENT_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
 # Очистка памяти модели от сообщений
+# @bot.message_handler(commands=['restart'])
+# def restart_model(message):
+#     chat_id = str(message.chat.id)
+#     result = dialogue_storage.collection.delete_many({'chat_id': chat_id})  # Очистить все сообщения для данного чата
+    
+#     if result.deleted_count > 0:
+#         bot.send_message(message.from_user.id, f'Ок, давай начнем с чистого листа! 😊📝 Очищено {result.deleted_count} сообщений для чата № {chat_id}.')
+#     else:
+#         bot.send_message(message.from_user.id, f'Коллекция уже пуста. Нечего удалять для чата № {chat_id}. 😄 Давай всё равно начнём заново.')
+
 @bot.message_handler(commands=['restart'])
 def restart_model(message):
-    chat_id = str(message.chat.id)
-    result = dialogue_storage.collection.delete_many({'chat_id': chat_id})  # Очистить все сообщения для данного чата
-    
-    if result.deleted_count > 0:
-        bot.send_message(message.from_user.id, f'Ок, давай начнем с чистого листа! 😊📝 Очищено {result.deleted_count} сообщений для чата № {chat_id}.')
-    else:
-        bot.send_message(message.from_user.id, f'Коллекция уже пуста. Нечего удалять для чата № {chat_id}. 😄 Давай всё равно начнём заново.')
+    bot.send_message(message.from_user.id, 'Команда /restart получена! 🛠')
+
 
 @bot.message_handler(commands=['len'])
 def get_dialogue_length(message):
