@@ -73,7 +73,7 @@ def get_dialogue_length(message):
     response += f"Последнее сообщение: {all_messages[-1]['timestamp'] if all_messages else 'Нет сообщений'}"
     
     bot.send_message(message.from_user.id, response)
-    
+
 # Инициализация Flask приложения
 app = Flask(__name__)
 dialogue_storage = DialogueStorage()
@@ -105,7 +105,7 @@ def get_text_messages(message):
     logging.info(f"Dialogue history for chat {chat_id}: {dialogue_history}")
 
     if len(dialogue_history) == 0:
-        bot.send_message(message.from_user.id, "Ну ок, давай начнем сначала! )")
+        bot.send_message(message.from_user.id, "Поехали 🚀🏁 )")
 
     # Убираем поле 'timestamp' из сообщений перед отправкой в API
     messages_for_groq = [
