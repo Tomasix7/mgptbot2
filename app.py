@@ -47,18 +47,6 @@ UNSPLASH_ACCESS_KEY = os.getenv('UNSPLASH_ACCESS_KEY')
 client_groq = Groq(api_key=CLIENT_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
-# Инициализация Flask приложения
-app = Flask(__name__)
-dialogue_storage = DialogueStorage()
-
-@app.route('/' + bot.token, methods=['POST'])
-def get_message():
-    json_str = request.get_data().decode('UTF-8')
-    logging.info(f'Received update: {json_str}')
-    update = telebot.types.Update.de_json(json_str)
-    bot.process_new_updates([update])
-    return 'ok', 200
-
 # Очистка памяти модели от сообщений
 @bot.message_handler(commands=['restart'])
 def restart_model(message):
@@ -69,7 +57,6 @@ def restart_model(message):
         bot.send_message(message.from_user.id, f'Ок, давай начнем с чистого листа! 😊📝 Очищено {result.deleted_count} сообщений для чата № {chat_id}.')
     else:
         bot.send_message(message.from_user.id, f'Коллекция уже пуста. Нечего удалять для чата № {chat_id}. 😄 Давай всё равно начнём заново.')
-
 
 @bot.message_handler(commands=['len'])
 def get_dialogue_length(message):
@@ -86,6 +73,19 @@ def get_dialogue_length(message):
     response += f"Последнее сообщение: {all_messages[-1]['timestamp'] if all_messages else 'Нет сообщений'}"
     
     bot.send_message(message.from_user.id, response)
+    
+# Инициализация Flask приложения
+app = Flask(__name__)
+dialogue_storage = DialogueStorage()
+
+@app.route('/' + bot.token, methods=['POST'])
+def get_message():
+    json_str = request.get_data().decode('UTF-8')
+    logging.info(f'Received update: {json_str}')
+    update = telebot.types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return 'ok', 200
+
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
