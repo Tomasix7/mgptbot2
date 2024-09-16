@@ -62,9 +62,14 @@ def get_message():
 # Очистка памяти модели от сообщений
 @bot.message_handler(commands=['restart'])
 def restart_model(message):
-    bot.send_message(message.from_user.id, 'Приветик! 😊 Что, красивая я, да? 🥰 🔄')
     chat_id = str(message.chat.id)
-    dialogue_storage.collection.delete_many({'chat_id': chat_id})  # Очистить все сообщения для данного чата
+    result = dialogue_storage.collection.delete_many({'chat_id': chat_id})  # Очистить все сообщения для данного чата
+    
+    if result.deleted_count > 0:
+        bot.send_message(message.from_user.id, f'Ок, давай начнем с чистого листа! 😊📝 Очищено {result.deleted_count} сообщений для чата № {chat_id}.')
+    else:
+        bot.send_message(message.from_user.id, f'Коллекция уже пуста. Нечего удалять для чата № {chat_id}. 😄 Давай всё равно начнём заново.')
+
 
 @bot.message_handler(commands=['len'])
 def get_dialogue_length(message):
@@ -125,7 +130,7 @@ def get_text_messages(message):
         dialogue_storage.add_message(chat_id, 'assistant', response.choices[0].message.content)
     except Exception as e:
         logging.error(f'Error when sending request to Groq: {e}')
-        bot.send_message(message.from_user.id, "Прошу прощения 😊 Не прошло сообщение, повтори чуть позже, пожалуйста 🙏")
+        bot.send_message(message.from_user.id, "Отправь мне смайлик 🙏 🥰")
 
 
 @app.route('/')
