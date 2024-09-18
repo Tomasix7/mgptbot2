@@ -87,21 +87,25 @@ def get_prompt_for_time():
     prompts_dir = 'prompts/'
 
     if 0 <= current_hour < 3:
-        prompt_file = os.path.join(prompts_dir,'goodnight_prompt.txt')
+        prompt_file = os.path.join(prompts_dir,'sleepwell_prompt.txt')
     elif 3 <= current_hour < 7:
         prompt_file = os.path.join(prompts_dir,'morning_prompt.txt')
     elif 7 <= current_hour < 9:
         prompt_file = os.path.join(prompts_dir,'good_prompt.txt')
-    elif 9 <= current_hour < 12:
+    elif 9 <= current_hour < 11:
         prompt_file = os.path.join(prompts_dir,'how_prompt.txt')
-    elif 12 <= current_hour < 15:
+    elif 11 <= current_hour < 13:
+        prompt_file = os.path.join(prompts_dir,'lunch_prompt.txt')
+    elif 13 <= current_hour < 15:
         prompt_file = os.path.join(prompts_dir,'story_prompt.txt')
-    elif 15 <= current_hour < 18:
+    elif 15 <= current_hour < 17:
         prompt_file = os.path.join(prompts_dir,'yoday_prompt.txt')
-    elif 18 <= current_hour < 20:
+    elif 17 <= current_hour < 19:
+        prompt_file = os.path.join(prompts_dir,'prompt.txt')
+    elif 19 <= current_hour < 21:
         prompt_file = os.path.join(prompts_dir,'date_prompt.txt')
     else:
-        prompt_file = os.path.join(prompts_dir,'prompt.txt')
+        prompt_file = os.path.join(prompts_dir,'goodnight_prompt.txt')
     
     return prompt_file
 
@@ -127,12 +131,12 @@ def send_morning_message():
         today = datetime.now().strftime("%d.%m.%Y")
         final_prompt = f"{base_prompt}\nСегодня {today}. Пожалуйста, включи в пожелание темы: {', '.join(today_elements)}."
 
-        # Получаем историю диалога (например, последние 5 сообщений)
-        dialogue_history = dialogue_storage.get_messages(chat_id)[-2:]
+        # Получаем историю диалога (например, последние 5 сообщений или 0, как сейчас)
+        dialogue_history = dialogue_storage.get_messages(chat_id)[0:0]
         logging.info(f'История диалога для chat_id {chat_id}: {dialogue_history}')
 
         if len(dialogue_history) == 0:
-            bot.send_message(chat_id, "🥰")
+            bot.send_message(chat_id, "🎉🥰")
 
         # Подготовка данных для API
         messages_for_groq = [
@@ -157,7 +161,7 @@ def send_morning_message():
         response = client_groq.chat.completions.create(
             model='llama3-70b-8192',
             messages=messages,
-            temperature=0.7
+            temperature=0
         )
 
         logging.info(f"Полный ответ от Groq: {response}")
