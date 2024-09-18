@@ -7,6 +7,7 @@ import random
 from datetime import datetime, timezone
 import logging
 from character import NANA
+from dictionary import NIGHT_ELEMENTS, DAY_ELEMENTS, EVENING_ELEMENTS
 
 # Настраиваем логирование
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -86,28 +87,43 @@ def get_prompt_for_time():
     # Путь к папке prompts
     prompts_dir = 'prompts/'
 
-    if 0 <= current_hour < 3:
+    if 0 <= current_hour < 2:
+        prompt_file = os.path.join(prompts_dir,'goodnight_prompt.txt')
+    elif 2 <= current_hour < 4:
         prompt_file = os.path.join(prompts_dir,'sleepwell_prompt.txt')
-    elif 3 <= current_hour < 7:
+    elif 4 <= current_hour < 6:
+        prompt_file = os.path.join(prompts_dir,'sleepwell_prompt.txt')
+    elif 6 <= current_hour < 8:
         prompt_file = os.path.join(prompts_dir,'morning_prompt.txt')
-    elif 7 <= current_hour < 9:
+    elif 8 <= current_hour < 10:
         prompt_file = os.path.join(prompts_dir,'good_prompt.txt')
-    elif 9 <= current_hour < 11:
+    elif 10 <= current_hour < 12:
         prompt_file = os.path.join(prompts_dir,'how_prompt.txt')
-    elif 11 <= current_hour < 13:
+    elif 12 <= current_hour < 14:
         prompt_file = os.path.join(prompts_dir,'lunch_prompt.txt')
-    elif 13 <= current_hour < 15:
+    elif 14 <= current_hour < 16:
         prompt_file = os.path.join(prompts_dir,'story_prompt.txt')
-    elif 15 <= current_hour < 17:
+    elif 16 <= current_hour < 18:
         prompt_file = os.path.join(prompts_dir,'yoday_prompt.txt')
-    elif 17 <= current_hour < 19:
+    elif 18 <= current_hour < 20:
         prompt_file = os.path.join(prompts_dir,'prompt.txt')
-    elif 19 <= current_hour < 21:
+    elif 20 <= current_hour < 22:
         prompt_file = os.path.join(prompts_dir,'date_prompt.txt')
+    elif 22 <= current_hour < 23:
+        prompt_file = os.path.join(prompts_dir,'goodnight_prompt.txt')
     else:
         prompt_file = os.path.join(prompts_dir,'goodnight_prompt.txt')
     
     return prompt_file
+
+def get_elements_for_time():
+    current_hour = datetime.now().hour
+    if 0 <= current_hour < 6:
+        return NIGHT_ELEMENTS
+    elif 6 <= current_hour < 18:
+        return DAY_ELEMENTS
+    else:
+        return EVENING_ELEMENTS
 
 # Отправка сообщения
 def send_morning_message():
@@ -118,16 +134,10 @@ def send_morning_message():
             base_prompt = file.read()
         logging.info(f'Базовый промпт прочитан из файла: {base_prompt_file}')
 
-        # Список дополнительных элементов
-        additional_elements = [
-            "погода", "прекрасный мир", "цветы", "космос",
-            "австралийское животное", "спорт", "водные процедуры",
-            "вдохновение", "пот", "музыка", "медитация", "попа", "пушок на ягодицах",
-            "транс", "пауэрлифтинг"
-        ]
-
         # Выбор случайных элементов
-        today_elements = get_random_elements(additional_elements, 2)
+        time_based_elements = get_elements_for_time()
+        today_elements = get_random_elements(time_based_elements, 2)
+        # today_elements = get_random_elements(additional_elements, 2)
         today = datetime.now().strftime("%d.%m.%Y")
         final_prompt = f"{base_prompt}\nСегодня {today}. Пожалуйста, включи в пожелание темы: {', '.join(today_elements)}."
 
