@@ -6,8 +6,11 @@ import requests
 import random
 from datetime import datetime, timezone
 import logging
+import pytz
 from character import NANA
 from dictionary import NIGHT_ELEMENTS, DAY_ELEMENTS, EVENING_ELEMENTS
+# from dotenv import load_dotenv # только для локального запуска
+# load_dotenv()
 
 # Настраиваем логирование
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -61,6 +64,7 @@ class DialogueStorage:
 
 dialogue_storage = DialogueStorage(collection)
 
+# Функция получения случайного изображения из UNSPLASH
 def get_random_image():
     try:
         url = "https://api.unsplash.com/photos/random"
@@ -79,11 +83,19 @@ def get_random_image():
         logging.error(f'Ошибка при получении случайного изображения: {e}')
         return None
 
+# Функция выбора количества дополнительных элементов для промпта
 def get_random_elements(elements, n):
     return random.sample(elements, min(n, len(elements)))
 
+# Получаем часовой пояс, но в Монго почему то всё равно UTC+0
+def get_current_hour_utc3(): 
+    tz = pytz.timezone('Europe/Moscow')  # Замените на нужную временную зону
+    return datetime.now(tz).hour
+
+# Функция выбора промпта в зависимости от времени суток
 def get_prompt_for_time():
-    current_hour = datetime.now().hour
+    current_hour = get_current_hour_utc3()
+    # current_hour = datetime.now().hour
     # Путь к папке prompts
     prompts_dir = 'prompts/'
 
@@ -116,6 +128,7 @@ def get_prompt_for_time():
     
     return prompt_file
 
+# Функция выбора массива дополнительных тем в зависимости от времени суток
 def get_elements_for_time():
     current_hour = datetime.now().hour
     if 0 <= current_hour < 6:
@@ -137,7 +150,6 @@ def send_morning_message():
         # Выбор случайных элементов
         time_based_elements = get_elements_for_time()
         today_elements = get_random_elements(time_based_elements, 2)
-        # today_elements = get_random_elements(additional_elements, 2)
         today = datetime.now().strftime("%d.%m.%Y")
         final_prompt = f"{base_prompt}\nСегодня {today}. Пожалуйста, включи в пожелание темы: {', '.join(today_elements)}."
 

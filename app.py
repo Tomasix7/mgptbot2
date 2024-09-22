@@ -1,56 +1,24 @@
 import os
 import logging
 import telebot
-from pymongo import MongoClient
-from datetime import datetime
 from flask import Flask, request
 from groq import Groq
 
 # Настройки логирования
 logging.basicConfig(level=logging.INFO)
 
-# Подключение к MongoDB
-MONGO_URI = os.getenv('MONGO_URI')
-client = MongoClient(MONGO_URI)
-db = client['dialogue_database']
-collection = db['dialogs']
-
-class DialogueStorage:
-    def __init__(self, collection):
-        self.collection = collection
-        # Создание TTL индекса для удаления сообщений старше 24 часов
-        self.collection.create_index("timestamp", expireAfterSeconds=86400)
-
-    def add_message(self, chat_id, role, content):
-        # Сохранение сообщения с меткой времени
-        message = {
-            'chat_id': chat_id,
-            'role': role,
-            'content': content,
-            'timestamp': datetime.utcnow()
-        }
-        self.collection.insert_one(message)
-
-    def get_messages(self, chat_id):
-        # Получение всех сообщений для данного чата
-        return list(self.collection.find({'chat_id': chat_id}).sort('timestamp', 1))
-
-    def clean_old_messages(self):
-        # MongoDB сам очистит старые сообщения по TTL индексу
-        pass
-
 # Инициализация Groq и Telegram Bot
-YOUR_CHAT_ID = os.getenv("YOUR_CHAT_ID")
 CLIENT_API_KEY = os.getenv("CLIENT_API_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-UNSPLASH_ACCESS_KEY = os.getenv('UNSPLASH_ACCESS_KEY')
+
+# Импортируем dialogue_storage после получения переменных окружения
+from dialogue_storage import dialogue_storage
 
 client_groq = Groq(api_key=CLIENT_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
 # Инициализация Flask приложения и DialogueStorage
 app = Flask(__name__)
-dialogue_storage = DialogueStorage(collection)
 
 @app.route('/' + bot.token, methods=['POST'])
 def get_message():
