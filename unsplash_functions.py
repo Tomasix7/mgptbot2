@@ -1,19 +1,25 @@
 import requests
 import logging
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
-UNSPLASH_ACCESS_KEY = os.getenv('UNSPLASH_ACCESS_KEY')
+# load_dotenv()
+UNSPLASH_ACCESS_KEY = os.getenv('UNSKEY')
 
 # Функция получения случайного изображения из UNSPLASH
-def get_random_image():
+def get_random_image(gender):
     try:
         url = "https://api.unsplash.com/photos/random"
+        query = """
+        man back, man body, bodybuilding, abs, gym, underwear, male, love images, kiss images,
+        roses, laboratory, coffee, tea, maldives
+        """ if gender == "female" else """
+        girl back, lingerie, female, roses, laboratory, coffee, tea, maldives
+        """
         params = {
             "client_id": UNSPLASH_ACCESS_KEY,
             "orientation": "portrait",
-            "query": "girl back, lingerie, female",
+            "query": query,
             "count": 1
         }
         response = requests.get(url, params=params)

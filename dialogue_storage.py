@@ -11,8 +11,8 @@ class DialogueStorage:
     def __init__(self):
         MONGO_URI = os.getenv('MONGO_URI')
         client = MongoClient(MONGO_URI)
-        db = client['dialogue_database']
-        self.collection = db['dialogs']
+        db = client['heroku_dialogue']
+        self.collection = db['ula']
         
         # Индекс для автоматической очистки данных старше 24 часов
         try:

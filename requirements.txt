@@ -4,3 +4,4 @@ groq
 schedule
 pymongo
 pytz
+python-dotenv
