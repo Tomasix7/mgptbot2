@@ -7,12 +7,15 @@ import pytz
 # Создаем объект часового пояса UTC+3
 tz = pytz.timezone('Europe/Moscow')  # Замените на нужную временную зону
 
+DBASE = os.getenv('DBASE')
+DCOLLECTION = os.getenv('DCOLLECTION')
+
 class DialogueStorage:
     def __init__(self):
         MONGO_URI = os.getenv('MONGO_URI')
         client = MongoClient(MONGO_URI)
-        db = client['heroku_dialogue']
-        self.collection = db['ula']
+        db = client[DBASE]
+        self.collection = db[DCOLLECTION]
         
         # Индекс для автоматической очистки данных старше 24 часов
         try:

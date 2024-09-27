@@ -5,6 +5,8 @@ import telebot
 from flask import Flask, render_template, request
 from bot.handlers import bot
 
+WEBHOOK_URL = os.getenv('WEBHOOK_URL')
+
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -26,6 +28,8 @@ def index():
 # PRODUCTION
 if __name__ == '__main__':
     bot.remove_webhook()
-    bot.set_webhook(url='https://mgptbot2.onrender.com/' + bot.token)
-    logging.info(f'Webhook set to: https://mgptbot2.onrender.com/{bot.token}')
+    bot.set_webhook(url= WEBHOOK_URL + bot.token)
+    logging.info(f'Webhook set to: {WEBHOOK_URL}/{bot.token}')
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
+# 'https://mgptbot2.onrender.com/'
