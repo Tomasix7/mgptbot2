@@ -93,7 +93,7 @@ def get_text_messages(message):
     global last_request_hash
 
     # Отправляем сердечко до обработки сообщения
-    heart_message = bot.send_message(message.chat.id, "❤️")
+    heart_message = bot.send_message(message.chat.id, "💚")
 
     # Генерация хеша входящего сообщения
     current_hash = hashlib.md5(message.text.encode()).hexdigest()
