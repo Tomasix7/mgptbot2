@@ -3,17 +3,25 @@ from config import client_groq, bot, request_queue
 from bot.truncation_utils import truncate_messages  # Обрезка сообщений
 from dialogue_storage import dialogue_storage
 from characters import get_character
-from bot.utils import is_authorized
+from bot.utils import is_authorized, notify_admin, DuplicateMessageFilter
 import hashlib
 import asyncio
 import time
+import os
+# from pymongo import MongoClient
 
-# Add this to your global variables
+# Глобальная переменная для хранения хеша последнего сообщения для фильтрации дублей
 last_request_hash = None
+# Создаем экземпляр фильтра
+duplicate_filter = DuplicateMessageFilter()
 
 # Обработчик команды /anima
 @bot.message_handler(commands=['anima'])
 def start_message(message):
+    # Фильтрация дублирующего сообщения. Проверка на дубликат
+    if duplicate_filter.is_duplicate(message.text):
+        return  # Если сообщение дубликат, выходим из функции
+    
     # Отправляем первое сообщение
     msg = bot.send_message(message.chat.id, "Пишу...")
     
@@ -35,6 +43,11 @@ def start_message(message):
 # TEST: POSITIVE RESPONSE
 @bot.message_handler(commands=['start'])
 def start_message(message):
+
+    # Фильтрация дублирующего сообщения. Проверка на дубликат
+    if duplicate_filter.is_duplicate(message.text):
+        return  # Если сообщение дубликат, выходим из функции
+
     bot.send_message(message.chat.id, """
     Привет! 😊 
 Я могу быть твоим ботфрендом 😎, говорить о чем угодно 😉 и присылать сообщения 💌 
@@ -62,6 +75,10 @@ def restart_model(message):
 
 @bot.message_handler(commands=['len'])
 def get_dialogue_length(message):
+    # Фильтрация дублирующего сообщения. Проверка на дубликат
+    if duplicate_filter.is_duplicate(message.text):
+        return  # Если сообщение дубликат, выходим из функции
+    
     if not is_authorized(message.chat.id):
         bot.send_message(message.chat.id, "Привет 😊 Пока у нас нет доступа друг к другу 😌")
         return
@@ -81,14 +98,25 @@ def get_dialogue_length(message):
     bot.send_message(message.from_user.id, response)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     DBASE HANDLER     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+  # Обработчик команды для введения нового пользователя. Перенесен в отдельный файл db_handler.py
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     TEXT HANDLER     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 @bot.message_handler(content_types=['text']) 
 def get_text_messages(message):
+    # Уведомляем администратора о новом пользователе
+    ADMIN_CHAT_ID = os.getenv('CHATID')
+    notify_admin(bot, message, ADMIN_CHAT_ID)
+
     if not is_authorized(message.chat.id):
         bot.send_message(message.chat.id, "Привет 😊 Пока у нас нет доступа друг к другу 😌")
         return
+   
 
     global last_request_hash
 
@@ -128,11 +156,16 @@ def get_text_messages(message):
         {"role": msg["role"], "content": msg["content"]} for msg in dialogue_history
     ])
 
-    character, _ = get_character(str(message.chat.id))
-    
+    # character = get_character(str(message.chat.id))
+    character_info, character_name, users_gender, timezone = get_character(message.chat.id)
+    logging.info(f"Character Info: {character_info}")
+    logging.info(f"Character Name: {character_name}")
+    logging.info(f"User's Gender: {users_gender}")
+    logging.info(f"User's Timezone: {timezone}")
+
     system_message = {
         "role": "system", 
-        "content": character
+        "content": character_info
     }
 
     messages = [system_message] + messages_for_groq

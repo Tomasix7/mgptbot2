@@ -3,6 +3,7 @@ import logging
 from config import init_bot_and_groq
 import telebot
 from flask import Flask, render_template, request
+from handlers import *
 from bot.handlers import bot
 
 WEBHOOK_URL = os.getenv('WEBHOOK_URL')

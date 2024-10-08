@@ -18,3 +18,4 @@ prompts2
 
 # Игнорировать файлы для тестов
 app_test_working.py
+BACKUP/

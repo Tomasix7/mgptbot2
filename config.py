@@ -20,8 +20,12 @@ def init_bot_and_groq():
     client_groq = Groq(api_key=CLIENT_API_KEY)
     bot = TeleBot(TELEGRAM_TOKEN)
 
+# Эти переменные пока остаются в congig vars на сервере, но будут использоваться значения из БД
 # List of authorized chat IDs
-AUTHORIZED_CHAT_IDS = ["514396790", "5378562535", "1309731434"]
+AUTHORIZED_CHAT_IDS = os.getenv('AUTHORIZED_CHAT_IDS')
+
+# admin IDs 
+ADMIN_CHAT_IDS = os.getenv('ADMIN_CHAT_IDS')
 
 setup_logging()  # Настройка логирования
 init_bot_and_groq()  # Инициализация бота и Groq

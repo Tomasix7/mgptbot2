@@ -8,6 +8,7 @@ class TimeZoneManager:
         self.default_timezone = pytz.timezone(default_timezone)
 
     def get_current_hour(self, timezone=None):
+        
         tz = pytz.timezone(timezone) if timezone else self.default_timezone
         return datetime.now(tz).hour
 
@@ -58,7 +59,7 @@ class TimeZoneManager:
             return EVENING_ELEMENTS
 
 # Пример использования
-# tz_manager = TimeZoneManager()
+# tz_manager = TimeZoneManager() # если ничего не передаем в скобках, то используется дефолтный часовой пояс
 # current_hour_moscow = tz_manager.get_current_hour()
 # current_hour_yekaterinburg = tz_manager.get_current_hour('Asia/Yekaterinburg')
 # prompt_file = tz_manager.get_prompt_for_time()
