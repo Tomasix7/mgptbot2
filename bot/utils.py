@@ -28,7 +28,7 @@ def is_admin(chat_id):
 # Функция для уведомления администратора о новом пользователе
 def notify_admin(bot, message, admin_chat_id):
     user = message.from_user
-    logging.info(f'Обращение от пользователя {user.id} {user.first_name} {user.last_name or '(фамилия не указана)'}')
+    logging.info(f'Обращение от пользователя {user.id} {user.first_name} {user.last_name or "(фамилия не указана)"}')
     if not collection.find_one({"chat_id": user.id}):
         # Собираем информацию о пользователе
         user_info = f"""
