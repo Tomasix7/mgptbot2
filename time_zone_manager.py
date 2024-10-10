@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytz
 import os
+import logging
 from dictionary import NIGHT_ELEMENTS, DAY_ELEMENTS, EVENING_ELEMENTS
 
 class TimeZoneManager:
@@ -24,28 +25,56 @@ class TimeZoneManager:
             prompt_file = 'sleepwell_prompt.txt'
         elif 4 <= current_hour < 6:
             prompt_file = 'sleepwell_prompt.txt'
-        elif 6 <= current_hour < 8:
+        elif 6 <= current_hour < 7:
             prompt_file = 'morning_prompt.txt'
-        elif 8 <= current_hour < 10:
+        elif 7 <= current_hour < 8:
+            prompt_file = '7_prompt.txt'
+        elif 8 <= current_hour < 9:
+            prompt_file = '8_prompt.txt'
+        elif 9 <= current_hour < 10:
             prompt_file = 'main_prompt.txt'
-        elif 10 <= current_hour < 12:
-            prompt_file = '11_prompt.txt'
-        elif 12 <= current_hour < 14:
+        elif 10 <= current_hour < 11:
+            prompt_file = '10_prompt.txt'
+        elif 11 <= current_hour < 12:
+            prompt_file = 'meditation_prompt.txt'
+        elif 12 <= current_hour < 13:
             prompt_file = 'lunch_prompt.txt'
-        elif 14 <= current_hour < 16:
+        elif 13 <= current_hour < 14:
+            prompt_file = '134_prompt.txt'
+        elif 14 <= current_hour < 15:
+            prompt_file = '14_prompt.txt'
+        elif 15 <= current_hour < 16:
             prompt_file = 'coffee_prompt.txt'
-        elif 16 <= current_hour < 18:
+        elif 16 <= current_hour < 17:
             prompt_file = 'afternoon_prompt.txt'
-        elif 18 <= current_hour < 20:
+        elif 17 <= current_hour < 18:
+            prompt_file = '17_prompt.txt'
+        elif 18 <= current_hour < 19:
             prompt_file = 'prompt.txt'
-        elif 20 <= current_hour < 22:
+        elif 19 <= current_hour < 20:
+            prompt_file = 'meditation_prompt.txt'
+        elif 20 <= current_hour < 21:
             prompt_file = 'date_prompt.txt'
+        elif 21 <= current_hour < 22:
+            prompt_file = '21_prompt.txt'
         elif 22 <= current_hour < 23:
             prompt_file = 'goodnight_prompt.txt'
         else:
-            prompt_file = 'main_prompt.txt'
+            prompt_file = 'meditation_prompt.txt'
         
-        return os.path.join(prompts_dir, prompt_file)
+        # return os.path.join(prompts_dir, prompt_file)
+
+        prompt_path = os.path.join(prompts_dir, prompt_file)
+        
+        try:
+            with open(prompt_path, 'r', encoding='utf-8') as file:
+                return file.read().strip()
+        except FileNotFoundError:
+            logging.error(f"Файл промпта не найден: {prompt_path}")
+            return "Базовый промпт недоступен."
+        except IOError as e:
+            logging.error(f"Ошибка при чтении файла промпта: {e}")
+            return "Ошибка при чтении базового промпта."
 
     def get_elements_for_time(self, current_hour=None):
         if current_hour is None:

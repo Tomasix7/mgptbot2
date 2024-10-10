@@ -59,7 +59,8 @@ def restart_model(message):
         bot.send_message(message.chat.id, "Привет 😊 Пока у нас нет доступа друг к другу 😌")
         return
 
-    chat_id = str(message.chat.id)
+    # chat_id = str(message.chat.id) 1
+    chat_id = message.chat.id
     try:
         result = dialogue_storage.collection.delete_many({'chat_id': chat_id})
         
@@ -83,7 +84,8 @@ def get_dialogue_length(message):
         bot.send_message(message.chat.id, "Привет 😊 Пока у нас нет доступа друг к другу 😌")
         return
 
-    chat_id = str(message.chat.id)
+    # chat_id = str(message.chat.id) 2
+    chat_id = message.chat.id
     
     all_messages = dialogue_storage.get_messages(chat_id)
     total_chars = sum(len(msg['content']) for msg in all_messages)
@@ -137,7 +139,8 @@ def get_text_messages(message):
     logging.debug(f'User chat_id: {message.chat.id}')
     logging.info(f'Received message: {message.text}')
     
-    chat_id = str(message.chat.id)
+    # chat_id = str(message.chat.id) 3
+    chat_id = message.chat.id
     dialogue_storage.add_message(chat_id, 'user', message.text)
    
     dialogue_history = dialogue_storage.get_messages(chat_id)

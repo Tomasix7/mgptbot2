@@ -23,7 +23,7 @@ def is_authorized(chat_id):
     return result is not None
 
 def is_admin(chat_id):
-    return str(chat_id) in ADMIN_CHAT_IDS
+    return chat_id in ADMIN_CHAT_IDS
 
 # Функция для уведомления администратора о новом пользователе
 def notify_admin(bot, message, admin_chat_id):

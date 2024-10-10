@@ -1,6 +1,7 @@
 from bot.request_queue import request_queue
 from bot.truncation_utils import truncate_message, truncate_messages
 import os
+import ast
 import logging
 from telebot import TeleBot
 from groq import Groq
@@ -22,10 +23,11 @@ def init_bot_and_groq():
 
 # Эти переменные пока остаются в congig vars на сервере, но будут использоваться значения из БД
 # List of authorized chat IDs
-AUTHORIZED_CHAT_IDS = os.getenv('AUTHORIZED_CHAT_IDS')
+# AUTHORIZED_CHAT_IDS = os.getenv('AUTHORIZED_CHAT_IDS')
 
 # admin IDs 
-ADMIN_CHAT_IDS = os.getenv('ADMIN_CHAT_IDS')
+# Извлекаем и преобразуем строковый список в список чисел
+ADMIN_CHAT_IDS = ast.literal_eval(os.getenv('ADMIN_CHAT_IDS', '[]'))
 
 setup_logging()  # Настройка логирования
 init_bot_and_groq()  # Инициализация бота и Groq

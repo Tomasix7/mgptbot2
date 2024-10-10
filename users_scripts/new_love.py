@@ -157,10 +157,30 @@ def send_scheduled_message(object_id):
         time_based_elements = tz_manager.get_elements_for_time(current_hour)
         logging.info(f'Элементы по времени: {time_based_elements}')
 
-        # Добавляем случайные элементы в сообщение
+        # Новая версия передачи текущего времени в промт
+        now = datetime.now(tz_manager.default_timezone)
+        today = now.strftime("%d.%m.%Y")
+        current_time = now.strftime("%H:%M")
+
+        # # Определяем время суток
+        # hour = now.hour
+        # if 5 <= hour < 12:
+        #     time_of_day = "утро"
+        # elif 12 <= hour < 18:
+        #     time_of_day = "день"
+        # elif 18 <= hour < 23:
+        #     time_of_day = "вечер"
+        # else:
+        #     time_of_day = "ночь"
+
+        # # Добавляем случайные элементы в сообщение
         today_elements = random.sample(time_based_elements, 2)
-        today = datetime.now(tz_manager.default_timezone).strftime("%d.%m.%Y")
-        final_prompt = f"{base_prompt_file}\nСегодня {today}. Пожалуйста, включи в пожелание темы: {', '.join(today_elements)}."
+        # today = datetime.now(tz_manager.default_timezone).strftime("%d.%m.%Y")
+        # final_prompt = f"{base_prompt_file}\nСегодня {today}. Пожалуйста, включи в пожелание темы: {', '.join(today_elements)}."
+
+        final_prompt = f"{base_prompt_file}\nСегодня {today}, текущее время {current_time}. " \
+               f"Пожалуйста, включи в пожелание темы: {', '.join(today_elements)}. " \
+               f"Учитывай текущее время суток."
 
         logging.info(f'Длина финального промпта: {len(final_prompt)}')
 
@@ -187,6 +207,7 @@ def send_scheduled_message(object_id):
         full_message = "\n".join(combined_messages)
 
         logging.info(f'Окончательная длина запроса к Groq: {len(full_message)}')
+        logging.info(f'Окончательная длина запроса к Groq: {full_message}')
 
         # Отправляем сообщение в Groq
         response = client_groq.chat.completions.create(
